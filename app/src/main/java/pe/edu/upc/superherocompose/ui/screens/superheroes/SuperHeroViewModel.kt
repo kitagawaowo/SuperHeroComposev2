@@ -29,4 +29,8 @@ class SuperHeroViewModel(application: Application) : AndroidViewModel(applicatio
         superHeroRepository.fetchByName(name.value!!)
         _superHeroes.value = superHeroRepository.superHeroes.value
     }
+
+    fun insert(superHero: SuperHero) {
+        superHeroRepository.insert(superHero)
+    }
 }

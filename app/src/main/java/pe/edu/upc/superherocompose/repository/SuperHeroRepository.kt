@@ -3,6 +3,7 @@ package pe.edu.upc.superherocompose.repository
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import pe.edu.upc.superherocompose.data.local.SuperHeroDao
+import pe.edu.upc.superherocompose.data.local.SuperHeroEntity
 import pe.edu.upc.superherocompose.data.model.SuperHero
 import pe.edu.upc.superherocompose.data.remote.SuperHeroResponse
 import pe.edu.upc.superherocompose.data.remote.SuperHeroService
@@ -27,7 +28,15 @@ class SuperHeroRepository(
                 response: Response<SuperHeroResponse>
             ) {
                 if (response.isSuccessful) {
-                    _superHeroes.value = response.body()!!.results
+                    if (response.body()!!.results == null) {
+                        _superHeroes.value = emptyList()
+                    }
+                    else {
+                        _superHeroes.value = response.body()!!.results!!
+                        for (superHero in _superHeroes.value!!) {
+                            superHero.favorite = superHeroDao.fetchById(superHero.id).isNotEmpty()
+                        }
+                    }
                 }
             }
 
@@ -36,5 +45,17 @@ class SuperHeroRepository(
             }
 
         })
+    }
+
+    fun insert(superHero: SuperHero) {
+        val superHeroEntity = SuperHeroEntity(superHero.id)
+        superHeroDao.insert(superHeroEntity)
+        superHero.favorite = true
+    }
+
+    fun delete(superHero: SuperHero) {
+        val superHeroEntity = SuperHeroEntity(superHero.id)
+        superHeroDao.delete(superHeroEntity)
+        superHero.favorite = true
     }
 }

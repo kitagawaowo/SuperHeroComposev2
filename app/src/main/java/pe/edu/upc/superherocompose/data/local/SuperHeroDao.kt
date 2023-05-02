@@ -9,7 +9,7 @@ import pe.edu.upc.superherocompose.data.model.SuperHero
 @Dao
 interface SuperHeroDao {
     @Query("select * from SuperHero where id=:id")
-    fun fetchById(id: String): List<SuperHeroEntity>?
+    fun fetchById(id: String): List<SuperHeroEntity>
 
     @Insert
     fun insert(superHeroEntity: SuperHeroEntity)
