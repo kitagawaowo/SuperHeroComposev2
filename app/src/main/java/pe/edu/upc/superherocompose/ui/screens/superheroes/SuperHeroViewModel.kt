@@ -33,4 +33,8 @@ class SuperHeroViewModel(application: Application) : AndroidViewModel(applicatio
     fun insert(superHero: SuperHero) {
         superHeroRepository.insert(superHero)
     }
+
+    fun delete(superHero: SuperHero) {
+        superHeroRepository.delete(superHero)
+    }
 }

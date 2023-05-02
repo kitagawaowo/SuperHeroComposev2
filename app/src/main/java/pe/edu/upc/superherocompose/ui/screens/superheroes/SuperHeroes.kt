@@ -19,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,13 +85,17 @@ fun SuperHeroList(viewModel: SuperHeroViewModel) {
     LazyColumn {
 
         items(superHeroes) { superHero ->
-            SuperHeroCard(superHero)
+            SuperHeroCard(superHero, insertHero = {
+                viewModel.insert(superHero)
+            }, deleteHero = {
+                viewModel.delete(superHero)
+            })
         }
     }
 }
 
 @Composable
-fun SuperHeroCard(superHero: SuperHero, modifier: Modifier = Modifier) {
+fun SuperHeroCard(superHero: SuperHero, insertHero: () -> Unit, deleteHero: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -98,13 +103,18 @@ fun SuperHeroCard(superHero: SuperHero, modifier: Modifier = Modifier) {
     ) {
         Row {
             SuperHeroImage(superHero)
-            SuperHeroItem(superHero)
+            SuperHeroItem(superHero, insertHero, deleteHero)
         }
     }
 }
 
 @Composable
-fun SuperHeroItem(superHero: SuperHero, modifier: Modifier = Modifier) {
+fun SuperHeroItem(superHero: SuperHero, insertHero: () -> Unit, deleteHero: () -> Unit, modifier: Modifier = Modifier) {
+    val isFavorite = remember {
+        mutableStateOf(false)
+    }
+    isFavorite.value = superHero.favorite
+
     Spacer(modifier = modifier.width(8.dp))
     Row {
         Column(modifier = modifier.weight(7f)) {
@@ -113,10 +123,19 @@ fun SuperHeroItem(superHero: SuperHero, modifier: Modifier = Modifier) {
         }
         IconButton(
             modifier = modifier.weight(1f),
-            onClick = { /*TODO*/ }) {
+            onClick = {
+                if (isFavorite.value) {
+                    deleteHero()
+                }
+                else {
+                    insertHero()
+                }
+                isFavorite.value = !isFavorite.value
+            }) {
             Icon(
                 Icons.Filled.Favorite,
-                contentDescription = null
+                contentDescription = null,
+                tint = if (isFavorite.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
         }
     }
